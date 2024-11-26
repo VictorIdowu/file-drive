@@ -1,6 +1,13 @@
 "use client";
 
-import { OrganizationSwitcher, UserButton, UserProfile } from "@clerk/nextjs";
+import {
+  OrganizationSwitcher,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  UserProfile,
+} from "@clerk/nextjs";
+import { Button } from "./ui/button";
 
 const Header = () => {
   return (
@@ -11,6 +18,12 @@ const Header = () => {
         <div className="flex gap-2 items-center">
           <OrganizationSwitcher />
           <UserButton />
+
+          <SignedOut>
+            <SignInButton>
+              <Button>Sign In</Button>
+            </SignInButton>
+          </SignedOut>
         </div>
       </div>
     </header>

@@ -23,12 +23,12 @@ http.route({
             tokenIdentifier: `https://growing-redbird-61.clerk.accounts.dev|${result.data.id}`,
           });
           break;
-        // case "organizationMembership.created":
-        //   await ctx.runMutation(internal.users.addOrgIdToUser, {
-        //     tokenIdentifier: `https://growing-redbird-61.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
-        //     orgId: result.data.organization.id,
-        //   });
-        //   break;
+        case "organizationMembership.created":
+          await ctx.runMutation(internal.users.addOrgIdToUser, {
+            tokenIdentifier: `https://growing-redbird-61.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+            orgId: result.data.organization.id,
+          });
+          break;
       }
       return new Response(null, {
         status: 200,
