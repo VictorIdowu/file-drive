@@ -6,11 +6,12 @@ import {
   SignInButton,
   SignOutButton,
 } from "@clerk/nextjs";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
 export default function Home() {
   const createFile = useMutation(api.files.createFile);
+  const files = useQuery(api.files.getFiles);
   return (
     <main className="flex flex-col min-h-dvh items-center justify-between p-24">
       <SignedIn>
@@ -24,7 +25,9 @@ export default function Home() {
         </SignOutButton>
       </SignedOut>
 
-      <Button onClick={() => createFile({ name: "Howfar" })}>Click me</Button>
+      {files?.map((file) => <div key={file._id}>{file.name}</div>)}
+
+      <Button onClick={() => createFile({ name: "Nope" })}>Click me</Button>
     </main>
   );
 }
