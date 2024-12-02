@@ -23,6 +23,7 @@ const hasAccessToOrg = async (
   return hasAccess;
 };
 
+// Create File
 export const createFile = mutation({
   args: {
     name: v.string(),
@@ -51,6 +52,7 @@ export const createFile = mutation({
   },
 });
 
+// Get Files
 export const getFiles = query({
   args: {
     orgId: v.string(),
@@ -72,5 +74,30 @@ export const getFiles = query({
       .query("files")
       .withIndex("by_orgId", (q) => q.eq("orgId", args.orgId))
       .collect();
+  },
+});
+
+//  Delete File
+export const deleteFile = mutation({
+  args: { fileId: v.id("files") },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) throw new ConvexError("Unauthorized! Login to delete file.");
+
+    const file = await ctx.db.get(args.fileId);
+
+    if (!file) throw new ConvexError("This file does not exist");
+
+    const hasAccess = await hasAccessToOrg(
+      ctx,
+      identity.tokenIdentifier,
+      file.orgId
+    );
+
+    if (!hasAccess)
+      throw new ConvexError("Unauthorized! Login to delete file.");
+
+    await ctx.db.delete(args.fileId);
   },
 });
