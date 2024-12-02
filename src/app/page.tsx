@@ -6,6 +6,7 @@ import { api } from "../../convex/_generated/api";
 import UploadButton from "@/components/UploadButton";
 import FileCard from "@/components/FileCard";
 import Image from "next/image";
+import { Loader2Icon } from "lucide-react";
 
 export default function Home() {
   const organization = useOrganization();
@@ -29,7 +30,7 @@ export default function Home() {
             {files?.map((file) => <FileCard key={file._id} file={file} />)}
           </div>
         </>
-      ) : (
+      ) : files?.length === 0 ? (
         <div className="mt-32 flex flex-col gap-8 justify-center items-center">
           <Image
             src={"/empty.svg"}
@@ -40,6 +41,11 @@ export default function Home() {
           />
           <p className="text-2xl">You have not uploaded any file yet.</p>
           <UploadButton />
+        </div>
+      ) : (
+        <div className="h-dvh flex flex-col justify-center items-center text-gray-500">
+          <Loader2Icon className="animate-spin" size={50} />
+          <p>Loading...</p>
         </div>
       )}
     </main>
