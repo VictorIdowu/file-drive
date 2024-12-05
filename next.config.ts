@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "unique-pelican-804.convex.cloud",
+        hostname: `**`,
       },
     ],
   },

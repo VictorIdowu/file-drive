@@ -59,6 +59,7 @@ export const createFile = mutation({
 export const getFiles = query({
   args: {
     orgId: v.string(),
+    query: v.optional(v.string()),
   },
   async handler(ctx, args) {
     const identity = await ctx.auth.getUserIdentity();
@@ -78,13 +79,18 @@ export const getFiles = query({
       .withIndex("by_orgId", (q) => q.eq("orgId", args.orgId))
       .collect();
 
+    const query = args.query;
+
+    const filtered = query
+      ? files.filter((file) =>
+          file.name.toLowerCase().includes(query.toLowerCase())
+        )
+      : files;
+
     return Promise.all(
-      files.map(async (file) => ({
+      filtered.map(async (file) => ({
         ...file,
         ...{ fileId: (await ctx.storage.getUrl(file.fileId)) || "" },
-        // ...(file.type === "image"
-        //   ? { fileId: (await ctx.storage.getUrl(file.fileId)) || "" }
-        //   : {}),
       }))
     );
   },
