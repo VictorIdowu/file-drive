@@ -24,7 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Doc } from "../../convex/_generated/dataModel";
+import { Doc, Id } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/button";
 import {
   FileTextIcon,
@@ -42,18 +42,23 @@ import Image from "next/image";
 
 interface Props {
   file: Doc<"files">;
+  favs: Doc<"favorites">[] | undefined;
 }
 
 // const getFileUrl = (fileId: string) => {
 //   return `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${fileId}`;
 // };
 
-const FileCard = ({ file }: Props) => {
+const FileCard = ({ file, favs }: Props) => {
   const typeIcons = {
     image: <ImageIcon />,
     pdf: <FileTextIcon />,
     csv: <GanttChartIcon />,
   } as Record<Doc<"files">["type"], React.ReactNode>;
+
+  const isFavorited = favs
+    ? favs.some((fav) => fav.fileId === file._id)
+    : false;
 
   return (
     <Card>
@@ -63,7 +68,7 @@ const FileCard = ({ file }: Props) => {
           {file.name}
         </CardTitle>
         <div className="absolute top-1 right-2">
-          <CardActions file={file} />
+          <CardActions file={file} isFavorited={isFavorited} />
         </div>
       </CardHeader>
       <CardContent className="h-[200px] flex justify-center items-center">
@@ -90,7 +95,13 @@ const FileCard = ({ file }: Props) => {
 
 export default FileCard;
 
-const CardActions = ({ file }: { file: Doc<"files"> }) => {
+const CardActions = ({
+  file,
+  isFavorited,
+}: {
+  file: Doc<"files">;
+  isFavorited: boolean;
+}) => {
   const [showModal, setShowModal] = useState(false);
   const { toast } = useToast();
   const deleteFile = useMutation(api.files.deleteFile);
@@ -141,7 +152,8 @@ const CardActions = ({ file }: { file: Doc<"files"> }) => {
             onClick={() => toggleFav({ fileId: file._id })}
             className="flex gap-2 items-center cursor-pointer"
           >
-            <HeartIcon /> Favorite
+            {isFavorited ? <HeartIcon fill="#000000" /> : <HeartIcon />}
+            {isFavorited ? "Unfavorite" : "Favorite"}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem

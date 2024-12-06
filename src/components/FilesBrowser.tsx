@@ -4,7 +4,7 @@ import SearchBar from "@/components/SearchBar";
 import UploadButton from "@/components/UploadButton";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FileCard from "@/components/FileCard";
 import Image from "next/image";
 import { Loader2Icon } from "lucide-react";
@@ -15,7 +15,7 @@ interface Props {
   favs?: boolean;
 }
 
-const FilesBrowser = ({ title, favs = false }: Props) => {
+const FilesBrowser = ({ title, favs }: Props) => {
   const organization = useOrganization();
   const user = useUser();
   const [query, setQuery] = useState("");
@@ -29,6 +29,11 @@ const FilesBrowser = ({ title, favs = false }: Props) => {
     orgId ? { orgId, query, favorites: favs } : "skip"
   );
 
+  const favorites = useQuery(
+    api.files.getAllFavorites,
+    orgId ? { orgId } : "skip"
+  );
+
   return (
     <>
       <div className="flex items-center justify-between">
@@ -40,7 +45,9 @@ const FilesBrowser = ({ title, favs = false }: Props) => {
         <>
           {files?.length > 0 ? (
             <div className="mt-8 flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-              {files?.map((file) => <FileCard key={file._id} file={file} />)}
+              {files?.map((file) => (
+                <FileCard key={file._id} file={file} favs={favorites} />
+              ))}
             </div>
           ) : (
             <div className="mt-32 flex flex-col gap-8 justify-center items-center">
