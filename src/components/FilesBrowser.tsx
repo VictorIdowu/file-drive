@@ -1,16 +1,21 @@
 "use client";
+
+import SearchBar from "@/components/SearchBar";
+import UploadButton from "@/components/UploadButton";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
-
-import UploadButton from "@/components/UploadButton";
+import { useState } from "react";
 import FileCard from "@/components/FileCard";
 import Image from "next/image";
 import { Loader2Icon } from "lucide-react";
-import SearchBar from "@/components/SearchBar";
-import { useState } from "react";
+import { api } from "../../convex/_generated/api";
 
-export default function Home() {
+interface Props {
+  title: string;
+  favs?: boolean;
+}
+
+const FilesBrowser = ({ title, favs = false }: Props) => {
   const organization = useOrganization();
   const user = useUser();
   const [query, setQuery] = useState("");
@@ -19,12 +24,15 @@ export default function Home() {
   if (organization.isLoaded && user.isLoaded) {
     orgId = organization.organization?.id ?? user.user?.id;
   }
-  const files = useQuery(api.files.getFiles, orgId ? { orgId, query } : "skip");
+  const files = useQuery(
+    api.files.getFiles,
+    orgId ? { orgId, query, favorites: favs } : "skip"
+  );
 
   return (
-    <main className="container mx-auto my-8 px-6">
+    <>
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold">My Files</h1>
+        <h1 className="text-4xl font-bold">{title}</h1>
         <UploadButton />
       </div>
       <SearchBar query={query} setQuery={setQuery} />
@@ -43,7 +51,12 @@ export default function Home() {
                 height={200}
                 className=""
               />
-              <p className="text-2xl">You have not uploaded any file yet.</p>
+              <p className="text-2xl">
+                {favs
+                  ? "You have not added any file to favorites"
+                  : "You have not uploaded any file yet"}
+                .
+              </p>
               <UploadButton />
             </div>
           )}
@@ -54,6 +67,8 @@ export default function Home() {
           <p>Loading...</p>
         </div>
       )}
-    </main>
+    </>
   );
-}
+};
+
+export default FilesBrowser;

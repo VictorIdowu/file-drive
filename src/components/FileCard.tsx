@@ -3,7 +3,6 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -12,7 +11,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -25,13 +23,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Doc, Id } from "../../convex/_generated/dataModel";
+import { Doc } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/button";
 import {
   FileTextIcon,
   GanttChartIcon,
+  HeartIcon,
   ImageIcon,
   MoreVertical,
   TrashIcon,
@@ -46,9 +44,9 @@ interface Props {
   file: Doc<"files">;
 }
 
-const getFileUrl = (fileId: string) => {
-  return `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${fileId}`;
-};
+// const getFileUrl = (fileId: string) => {
+//   return `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${fileId}`;
+// };
 
 const FileCard = ({ file }: Props) => {
   const typeIcons = {
@@ -96,6 +94,7 @@ const CardActions = ({ file }: { file: Doc<"files"> }) => {
   const [showModal, setShowModal] = useState(false);
   const { toast } = useToast();
   const deleteFile = useMutation(api.files.deleteFile);
+  const toggleFav = useMutation(api.files.toggleFavorite);
 
   const handleDelete = async () => {
     try {
@@ -138,9 +137,13 @@ const CardActions = ({ file }: { file: Doc<"files"> }) => {
           <MoreVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          {/* <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator /> */}
-
+          <DropdownMenuItem
+            onClick={() => toggleFav({ fileId: file._id })}
+            className="flex gap-2 items-center cursor-pointer"
+          >
+            <HeartIcon /> Favorite
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => setShowModal(true)}
             className="flex gap-2 text-red-600 items-center cursor-pointer"

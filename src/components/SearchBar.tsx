@@ -35,16 +35,16 @@ const SearchBar = ({ setQuery, query }: Props) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="flex gap-1 items-center"
+          className="flex gap-1 items-center w-full"
         >
           <FormField
             control={form.control}
             name="query"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="w-full md:max-w-96">
                 <FormControl>
                   <Input
-                    className="rounded-full"
+                    className="rounded-full w-full"
                     placeholder="Enter file name"
                     {...field}
                   />
