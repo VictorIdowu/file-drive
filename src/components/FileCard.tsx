@@ -24,9 +24,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Doc } from "../../convex/_generated/dataModel";
-import { Button } from "./ui/button";
+import { formatDistance } from "date-fns";
 import {
+  FileIcon,
   FileTextIcon,
   GanttChartIcon,
   HeartIcon,
@@ -36,7 +38,7 @@ import {
   UndoIcon,
 } from "lucide-react";
 import React, { useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
@@ -48,6 +50,9 @@ interface Props {
 }
 
 const FileCard = ({ file, favs }: Props) => {
+  const userProfile = useQuery(api.users.getUserProfile, {
+    userId: file.userId,
+  });
   const typeIcons = {
     image: <ImageIcon />,
     pdf: <FileTextIcon />,
@@ -61,7 +66,7 @@ const FileCard = ({ file, favs }: Props) => {
   return (
     <Card>
       <CardHeader className="flex flex-row relative">
-        <CardTitle className="flex gap-2 items-center">
+        <CardTitle className="flex gap-2 items-center text-base font-normal">
           <p>{typeIcons[file.type]}</p>
           {file.name}
         </CardTitle>
@@ -82,10 +87,16 @@ const FileCard = ({ file, favs }: Props) => {
         {file.type === "csv" && <GanttChartIcon size={50} color="#6b7280" />}
         {file.type === "pdf" && <FileTextIcon size={50} color="#6b7280" />}
       </CardContent>
-      <CardFooter className="flex justify-center">
-        <Button onClick={() => window.open(file.fileId, "_blank")}>
-          Download
-        </Button>
+      <CardFooter className="flex items-center text-sm text-gray-700 justify-between gap-2">
+        <div className="flex gap-2">
+          <Avatar className="w-6 h-6">
+            <AvatarImage src={userProfile?.image ?? ""} />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+          {userProfile?.name ?? ""}
+        </div>
+
+        <p>{formatDistance(new Date(file._creationTime), new Date())}</p>
       </CardFooter>
     </Card>
   );
@@ -167,6 +178,13 @@ const CardActions = ({
           <MoreVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={() => window.open(file.fileId, "_blank")}
+            className="flex gap-2 items-center cursor-pointer"
+          >
+            <FileIcon />
+            Download
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => toggleFav({ fileId: file._id })}
             className="flex gap-2 items-center cursor-pointer"
