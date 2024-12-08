@@ -24,7 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Doc, Id } from "../../convex/_generated/dataModel";
+import { Doc } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/button";
 import {
   FileTextIcon,
@@ -39,15 +39,12 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
+import { Protect } from "@clerk/nextjs";
 
 interface Props {
   file: Doc<"files">;
   favs: Doc<"favorites">[] | undefined;
 }
-
-// const getFileUrl = (fileId: string) => {
-//   return `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${fileId}`;
-// };
 
 const FileCard = ({ file, favs }: Props) => {
   const typeIcons = {
@@ -155,13 +152,15 @@ const CardActions = ({
             {isFavorited ? <HeartIcon fill="#000000" /> : <HeartIcon />}
             {isFavorited ? "Unfavorite" : "Favorite"}
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => setShowModal(true)}
-            className="flex gap-2 text-red-600 items-center cursor-pointer"
-          >
-            <TrashIcon /> Delete
-          </DropdownMenuItem>
+          <Protect role="org:admin" fallback={<></>}>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => setShowModal(true)}
+              className="flex gap-2 text-red-600 items-center cursor-pointer"
+            >
+              <TrashIcon /> Delete
+            </DropdownMenuItem>
+          </Protect>
         </DropdownMenuContent>
       </DropdownMenu>
     </>

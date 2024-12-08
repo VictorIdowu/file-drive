@@ -28,7 +28,8 @@ const hasAccessToOrg = async (ctx: QueryCtx | MutationCtx, orgId: string) => {
   if (!user) return null;
 
   const hasAccess =
-    user.orgIds.includes(orgId) || user.tokenIdentifier.includes(orgId);
+    user.orgIds.some((item) => item.orgId === orgId) ||
+    user.tokenIdentifier.includes(orgId);
 
   if (!hasAccess) return null;
   return { user };
@@ -117,6 +118,13 @@ export const deleteFile = mutation({
         "Unauthorized! You don't have access to this file."
       );
 
+    const isAdmin =
+      access.user.orgIds.find((org) => org.orgId === access.file.orgId)
+        ?.role === "admin";
+
+    if (!isAdmin)
+      throw new ConvexError("You do not have the access to delete files");
+
     await ctx.db.delete(args.fileId);
   },
 });
@@ -170,16 +178,6 @@ export const getAllFavorites = query({
       .collect();
 
     return favorites;
-
-    // if (!favorite) {
-    //   await ctx.db.insert("favorites", {
-    //     fileId: access.file._id,
-    //     userId: access.user._id,
-    //     orgId: access.file.orgId,
-    //   });
-    // } else {
-    //   await ctx.db.delete(favorite._id);
-    // }
   },
 });
 
