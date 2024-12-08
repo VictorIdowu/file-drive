@@ -1,5 +1,3 @@
-"use client";
-
 import FilesBrowser from "@/components/FilesBrowser";
 
 const Favorites = () => {

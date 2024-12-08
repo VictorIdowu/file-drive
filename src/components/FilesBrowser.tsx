@@ -13,9 +13,10 @@ import { api } from "../../convex/_generated/api";
 interface Props {
   title: string;
   favs?: boolean;
+  trashed?: boolean;
 }
 
-const FilesBrowser = ({ title, favs }: Props) => {
+const FilesBrowser = ({ title, favs, trashed }: Props) => {
   const organization = useOrganization();
   const user = useUser();
   const [query, setQuery] = useState("");
@@ -26,7 +27,7 @@ const FilesBrowser = ({ title, favs }: Props) => {
   }
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favorites: favs } : "skip"
+    orgId ? { orgId, query, favorites: favs, trashed } : "skip"
   );
 
   const favorites = useQuery(
@@ -52,7 +53,7 @@ const FilesBrowser = ({ title, favs }: Props) => {
           ) : (
             <div className="mt-32 flex flex-col gap-8 justify-center items-center">
               <Image
-                src={"/empty.svg"}
+                src={trashed ? "/trash.svg" : "/empty.svg"}
                 alt=""
                 width={200}
                 height={200}
@@ -61,7 +62,9 @@ const FilesBrowser = ({ title, favs }: Props) => {
               <p className="text-2xl">
                 {favs
                   ? "You have not added any file to favorites"
-                  : "You have not uploaded any file yet"}
+                  : trashed
+                    ? "You have no file in trash"
+                    : "You have not uploaded any file yet"}
                 .
               </p>
               <UploadButton />

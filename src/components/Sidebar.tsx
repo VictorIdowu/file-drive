@@ -1,6 +1,6 @@
 "use client";
 
-import { FileIcon, StarIcon } from "lucide-react";
+import { FileIcon, StarIcon, TrashIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,6 +18,12 @@ const navItems = [
     url: "/dashboard/favorites",
     icon: <StarIcon size={24} />,
     id: 2,
+  },
+  {
+    name: "Trash",
+    url: "/dashboard/trash",
+    icon: <TrashIcon size={24} />,
+    id: 3,
   },
 ];
 

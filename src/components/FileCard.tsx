@@ -33,6 +33,7 @@ import {
   ImageIcon,
   MoreVertical,
   TrashIcon,
+  UndoIcon,
 } from "lucide-react";
 import React, { useState } from "react";
 import { useMutation } from "convex/react";
@@ -102,6 +103,7 @@ const CardActions = ({
   const [showModal, setShowModal] = useState(false);
   const { toast } = useToast();
   const deleteFile = useMutation(api.files.deleteFile);
+  const restoreFile = useMutation(api.files.restoreFile);
   const toggleFav = useMutation(api.files.toggleFavorite);
 
   const handleDelete = async () => {
@@ -109,8 +111,8 @@ const CardActions = ({
       await deleteFile({ fileId: file._id });
       toast({
         variant: "default",
-        title: "File Deleted!",
-        description: "Your file is now removed from the system.",
+        title: "File marked for deletion!",
+        description: "Your file will be deleted soon.",
       });
     } catch (err) {
       console.log(err);
@@ -121,20 +123,40 @@ const CardActions = ({
       });
     }
   };
+  const handleRestore = async () => {
+    try {
+      await restoreFile({ fileId: file._id });
+      toast({
+        variant: "default",
+        title: "File restored!",
+        description: "Your file has been removed from the deletion queue.",
+      });
+    } catch (err) {
+      console.log(err);
+      toast({
+        variant: "destructive",
+        title: "Something went wrong!",
+        description: "File could not be restored, try again later",
+      });
+    }
+  };
   return (
     <>
       <AlertDialog open={showModal} onOpenChange={setShowModal}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              file and remove the data from our servers.
+              {file.trashed
+                ? "This file will be removed from the deletion queue and restored to your files."
+                : "Your file will be moved to the trash and scheduled for deletion."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>
+            <AlertDialogAction
+              onClick={file.trashed ? handleRestore : handleDelete}
+            >
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -156,9 +178,11 @@ const CardActions = ({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => setShowModal(true)}
-              className="flex gap-2 text-red-600 items-center cursor-pointer"
+              className={`flex gap-2 items-center cursor-pointer ${file.trashed ? "text-green-600" : "text-red-600"}`}
             >
-              <TrashIcon /> Delete
+              {file.trashed ? <UndoIcon /> : <TrashIcon />}
+
+              {file.trashed ? "Restore" : "Delete"}
             </DropdownMenuItem>
           </Protect>
         </DropdownMenuContent>
