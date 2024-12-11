@@ -4,7 +4,7 @@ import SearchBar from "@/components/SearchBar";
 import UploadButton from "@/components/UploadButton";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FileCard from "@/components/FileCard";
 import Image from "next/image";
 import { Loader2Icon } from "lucide-react";
@@ -36,9 +36,9 @@ const FilesBrowser = ({ title, favs, trashed }: Props) => {
   );
 
   return (
-    <>
+    <div className="py-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold">{title}</h1>
+        <h1 className="text-4xl font-bold pl-10 lg:pl-0">{title}</h1>
         <UploadButton />
       </div>
       <SearchBar query={query} setQuery={setQuery} />
@@ -77,7 +77,7 @@ const FilesBrowser = ({ title, favs, trashed }: Props) => {
           <p>Loading...</p>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

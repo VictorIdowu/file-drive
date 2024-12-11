@@ -5,7 +5,6 @@ import {
   SignedOut,
   SignInButton,
   UserButton,
-  UserProfile,
 } from "@clerk/nextjs";
 import { Button } from "./ui/button";
 import Image from "next/image";

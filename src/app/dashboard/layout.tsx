@@ -13,7 +13,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="container mx-auto my-8 px-6 flex gap-8">
+    <main className="container mx-auto px-6 flex gap-8 relative">
       <Sidebar />
       <div className="grow">{children}</div>
     </main>
