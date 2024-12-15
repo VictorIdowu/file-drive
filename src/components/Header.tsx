@@ -12,7 +12,7 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <header className="border-b py-4 bg-gray-50">
+    <header className="relative z-10 border-b py-4 bg-gray-50">
       <div className="container mx-auto flex justify-between items-center px-6 2xl:px-0">
         <Link href={"/"} className="flex gap-2 items-center">
           <Image

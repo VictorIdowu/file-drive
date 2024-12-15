@@ -53,7 +53,7 @@ const FilesBrowser = ({ title, favs, trashed }: Props) => {
   );
 
   return (
-    <div className="py-8 overflow-hidden flex flex-col">
+    <div className="pt-8 overflow-hidden flex flex-col">
       <div className="flex items-center justify-between">
         <h1 className="text-4xl font-bold pl-10 lg:pl-0">{title}</h1>
         <UploadButton />
