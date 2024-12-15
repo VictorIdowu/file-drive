@@ -7,7 +7,7 @@ import {
   QueryCtx,
 } from "./_generated/server";
 import { fileTypes } from "./schema";
-import { Id } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 import { access } from "fs";
 
 export const generateUploadUrl = mutation(async (ctx) => {
@@ -143,6 +143,17 @@ export const deleteAllFiles = internalMutation({
   },
 });
 
+const assertCanDeleteFile = (user: Doc<"users">, file: Doc<"files">) => {
+  const canDelete =
+    file.userId === user._id ||
+    user.orgIds.find((org) => org.orgId === file.orgId)?.role === "admin";
+
+  if (!canDelete)
+    throw new ConvexError("You do not have the access to delete this file");
+
+  return canDelete;
+};
+
 //  Trash File
 export const deleteFile = mutation({
   args: { fileId: v.id("files") },
@@ -154,12 +165,7 @@ export const deleteFile = mutation({
         "Unauthorized! You don't have access to this file."
       );
 
-    const isAdmin =
-      access.user.orgIds.find((org) => org.orgId === access.file.orgId)
-        ?.role === "admin";
-
-    if (!isAdmin)
-      throw new ConvexError("You do not have the access to delete files");
+    assertCanDeleteFile(access.user, access.file);
 
     await ctx.db.patch(args.fileId, {
       trashed: true,
@@ -178,12 +184,7 @@ export const restoreFile = mutation({
         "Unauthorized! You don't have access to this file."
       );
 
-    const isAdmin =
-      access.user.orgIds.find((org) => org.orgId === access.file.orgId)
-        ?.role === "admin";
-
-    if (!isAdmin)
-      throw new ConvexError("You do not have the access to delete files");
+    assertCanDeleteFile(access.user, access.file);
 
     await ctx.db.patch(args.fileId, {
       trashed: false,

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Doc } from "../../convex/_generated/dataModel";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import {
   DropdownMenu,
@@ -42,6 +42,7 @@ const CardActions = ({
   const deleteFile = useMutation(api.files.deleteFile);
   const restoreFile = useMutation(api.files.restoreFile);
   const toggleFav = useMutation(api.files.toggleFavorite);
+  const me = useQuery(api.users.getMe);
 
   const handleDelete = async () => {
     try {
@@ -118,7 +119,16 @@ const CardActions = ({
             {isFavorited ? <HeartIcon fill="#000000" /> : <HeartIcon />}
             {isFavorited ? "Unfavorite" : "Favorite"}
           </DropdownMenuItem>
-          <Protect role="org:admin" fallback={<></>}>
+          <Protect
+            condition={(check) => {
+              return (
+                check({
+                  role: "org:admin",
+                }) || file.userId === me?._id
+              );
+            }}
+            fallback={<></>}
+          >
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => setShowModal(true)}

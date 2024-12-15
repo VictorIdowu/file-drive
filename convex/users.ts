@@ -93,3 +93,21 @@ export const getUserProfile = query({
     };
   },
 });
+
+// Get personal info
+export const getMe = query({
+  args: {},
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) throw new ConvexError("Unauthorized! Login to upload file.");
+
+    const user = await getUser(ctx, identity.tokenIdentifier);
+
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  },
+});
