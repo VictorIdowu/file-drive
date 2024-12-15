@@ -22,7 +22,7 @@ const SearchBar = ({ setQuery, query }: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      query: "",
+      query: query,
     },
   });
 
@@ -31,7 +31,7 @@ const SearchBar = ({ setQuery, query }: Props) => {
   };
 
   return (
-    <div >
+    <div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}

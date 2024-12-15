@@ -69,6 +69,7 @@ export const getFiles = query({
   args: {
     orgId: v.string(),
     query: v.optional(v.string()),
+    type: v.string(),
     favorites: v.optional(v.boolean()),
     trashed: v.optional(v.boolean()),
   },
@@ -82,7 +83,13 @@ export const getFiles = query({
       .withIndex("by_orgId", (q) => q.eq("orgId", args.orgId))
       .collect();
 
+    const type = args.type;
     const query = args.query;
+
+    files =
+      type !== "all"
+        ? files.filter((file) => file.type.toLowerCase() === type)
+        : files;
 
     files = query
       ? files.filter((file) =>

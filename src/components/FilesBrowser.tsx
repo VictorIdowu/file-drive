@@ -10,8 +10,14 @@ import Image from "next/image";
 import { GridIcon, Loader2Icon, RowsIcon } from "lucide-react";
 import { api } from "../../convex/_generated/api";
 import FileTable from "./FileTable";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Props {
   title: string;
@@ -19,10 +25,18 @@ interface Props {
   trashed?: boolean;
 }
 
+const options = [
+  { val: "all", text: "All" },
+  { val: "image", text: "Image" },
+  { val: "csv", text: "CSV" },
+  { val: "pdf", text: "PDF" },
+];
+
 const FilesBrowser = ({ title, favs, trashed }: Props) => {
   const organization = useOrganization();
   const user = useUser();
   const [query, setQuery] = useState("");
+  const [type, setType] = useState("all");
 
   let orgId: string | undefined = undefined;
   if (organization.isLoaded && user.isLoaded) {
@@ -30,7 +44,7 @@ const FilesBrowser = ({ title, favs, trashed }: Props) => {
   }
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favorites: favs, trashed } : "skip"
+    orgId ? { orgId, type, query, favorites: favs, trashed } : "skip"
   );
 
   const favorites = useQuery(
@@ -47,14 +61,29 @@ const FilesBrowser = ({ title, favs, trashed }: Props) => {
 
       <Tabs defaultValue="grid" className="mt-6">
         <SearchBar query={query} setQuery={setQuery} />
-        <TabsList className="mt-6 mb-2">
-          <TabsTrigger value="grid" className="flex gap-2">
-            <GridIcon size={16} /> Grid
-          </TabsTrigger>
-          <TabsTrigger value="table" className="flex gap-2">
-            <RowsIcon size={16} /> Table
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex gap-2 justify-between items-center mt-6 mb-2">
+          <TabsList>
+            <TabsTrigger value="grid" className="flex gap-2">
+              <GridIcon size={16} /> Grid
+            </TabsTrigger>
+            <TabsTrigger value="table" className="flex gap-2">
+              <RowsIcon size={16} /> Table
+            </TabsTrigger>
+          </TabsList>
+
+          <Select value={type} onValueChange={setType}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {options.map((opt, i) => (
+                <SelectItem key={i} value={opt.val}>
+                  {opt.text}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         {files ? (
           <>
             <TabsContent className="w-full" value="grid">
