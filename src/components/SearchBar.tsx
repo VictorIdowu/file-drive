@@ -31,7 +31,7 @@ const SearchBar = ({ setQuery, query }: Props) => {
   };
 
   return (
-    <div className="mt-6">
+    <div >
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}

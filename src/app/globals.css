@@ -72,3 +72,14 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
+.ms-scrollbar {
+  -ms-overflow-style: none;
+}

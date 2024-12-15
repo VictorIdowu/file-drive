@@ -13,9 +13,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="container mx-auto px-6 flex gap-8 relative">
+    <main className="container mx-auto px-6 flex gap-8 relative overflow-x-hidden">
       <Sidebar />
-      <div className="grow">{children}</div>
+      <div className="grow w-full">{children}</div>
     </main>
   );
 }
