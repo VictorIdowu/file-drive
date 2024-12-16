@@ -92,6 +92,7 @@ export default function UploadButton() {
       form.reset();
       setShowModal(false);
     } catch (err) {
+      console.log(err);
       toast({
         variant: "destructive",
         title: "Something went wrong!",
